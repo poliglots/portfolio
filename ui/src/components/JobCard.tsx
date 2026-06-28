@@ -1,6 +1,6 @@
 import { useState } from "react";
 import JobModal from "./JobModal";
-import type { JobLog } from "../../crawl/src/store";
+import type { JobLog } from "../../../crawl/src/store";
 
 const stripHtml = (s: string) => s.replace(/<[^>]+>/g, " ").replace(/\s{2,}/g, " ").trim();
 
