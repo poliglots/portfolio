@@ -35,13 +35,19 @@ function NewsPage() {
 
   return (
     <>
+      <div id="page-header">
+        <h1 className="page-title">News Intelligence</h1>
+        <p className="page-subtitle">
+          {filtered.length} stories · {sources.length} sources · aggregated in real-time
+        </p>
+      </div>
       <div id="filter-bar">
         <div className="filter-sources">
           <button
             className={`source-all${filterBy === "" ? " is-active" : ""}`}
             onClick={() => setFilterBy("")}
           >
-            All
+            All Sources
           </button>
           {sources.map((s) => (
             <button

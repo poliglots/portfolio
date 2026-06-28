@@ -50,6 +50,12 @@ function JobsPage() {
 
   return (
     <>
+      <div id="page-header">
+        <h1 className="page-title">Job Market Watch</h1>
+        <p className="page-subtitle">
+          {filtered.length} roles · {locations.length} locations · {sourceFilters.length || [...new Set(jobsData.map(i => i.level))].length} companies
+        </p>
+      </div>
       <div id="filter-bar">
         <div className="filter-tags">
           {sourceFilters.map((s) => (
