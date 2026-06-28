@@ -1,6 +1,6 @@
 # Plan: Merge `news/` & `jobs/` into Single Portfolio Project
 
-> **Status:** Draft — Awaiting approval before execution
+> **Status:** ✅ **COMPLETE** — All phases implemented, committed as `7169a39`
 
 ---
 
