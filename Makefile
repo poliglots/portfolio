@@ -8,3 +8,5 @@ crawl:
 ui: crawl
 	cd ui && yarn && yarn build
 
+clean:
+	rm -rf dist/**
