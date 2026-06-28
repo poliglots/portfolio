@@ -293,7 +293,7 @@ async function crawlIcimsPage(
 
 async function crawlIcimsJobs() {
   const PAGE_SIZE = 20;
-  const MAX_PAGES = DEBUG_MODE ? 1 : 10;
+  const MAX_PAGES = DEBUG_MODE ? 1 : 5;
   let startIndex = 0;
   try {
     while (startIndex < MAX_PAGES * PAGE_SIZE) {
