@@ -1,5 +1,4 @@
 import "./App.css";
-import lastRun from "../../dist/time.json";
 import NewsCard from "./NewsCard";
 import JobCard from "./JobCard";
 import { useState, useEffect } from "react";
@@ -12,8 +11,9 @@ function navigateTo(page: "landing" | "news" | "jobs") {
 }
 
 // ─── Data loaders ──────────────────────────────────────────────────────────
-const newsDataPromise = fetch("../dist/news.json").then((r) => r.json());
-const jobsDataPromise = fetch("../dist/jobs.json").then((r) => r.json());
+const newsDataPromise = fetch("./news.json").then((r) => r.json());
+const jobsDataPromise = fetch("./jobs.json").then((r) => r.json());
+const timeUrl = new URL("./time.json", import.meta.url).href;
 
 // ─── App ───────────────────────────────────────────────────────────────────
 
@@ -22,6 +22,7 @@ function App() {
   const [theme, setTheme] = useState<"light" | "dark">(
     () => (localStorage.getItem("theme") as "light" | "dark") ?? "light"
   );
+  const [timeData, setTimeData] = useState<any>(null);
 
   setCurrentPage = set;
 
@@ -29,6 +30,10 @@ function App() {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
   }, [theme]);
+
+  useEffect(() => {
+    fetch(timeUrl).then((r) => r.json()).then((d) => setTimeData(d));
+  }, []);
 
   const toggleTheme = () => setTheme((t) => (t === "light" ? "dark" : "light"));
 
@@ -51,7 +56,7 @@ function App() {
           Jobs
         </button>
         <span className="nav-updated">
-          updated {lastRun.time.split("GMT")[0].trim()} UTC
+          updated {timeData?.time?.split("GMT")[0].trim() ?? ''} UTC
         </span>
         <button className="nav-theme-btn" onClick={toggleTheme} aria-label="Toggle theme">
           {theme === "light" ? "☾" : "☀"}
