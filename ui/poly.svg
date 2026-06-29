@@ -1,22 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- License: Apache. Made by Iconscout: https://github.com/Iconscout/unicons -->
-<svg fill="#000000" width="800px" height="800px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21.87,11.5l-4.5-7.79a1,1,0,0,0-.87-.5h-9a1,1,0,0,0-.87.5L2.13,11.5a1,1,0,0,0,0,1l4.5,7.79a1,1,0,0,0,.87.5h9a1,1,0,0,0,.87-.5l4.5-7.79A1,1,0,0,0,21.87,11.5Zm-6,7.29H8.08L4.15,12,8.08,5.21h7.84L19.85,12Z"/>
-
-<svg viewBox="0 0 600 120">
-    <defs>
-        <linearGradient id="neonG" x1="0" x2="1">
-            <stop offset="0" stop-color="#00f7ff"/>
-            <stop offset="1" stop-color="#7a00ff"/>
-        </linearGradient>
-        <filter id="neon">
-            <feGaussianBlur stdDeviation="6" result="b"/>
-            <feMerge>
-                <feMergeNode in="b"/>
-                <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-        </filter>
-    </defs>
-    <rect width="100%" height="100%" fill="#ffffff"/>
-    <text x="50%" y="55%" text-anchor="middle" font-size="44" fill="url(#neonG)" filter="url(#neon)">polyglot.dev</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none" shape-rendering="geometricPrecision">
+  <defs>
+    <linearGradient id="poly-grad" x1="0" y1="0" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4f46e5"/>
+      <stop offset="50%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+  <rect width="22" height="22" rx="5.5" fill="url(#poly-grad)"/>
+  <text x="11" y="16" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif" font-size="14" font-weight="800" fill="#ffffff">p</text>
 </svg>
