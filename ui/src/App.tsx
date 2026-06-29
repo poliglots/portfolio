@@ -11,8 +11,7 @@ function navigateTo(page: "landing" | "news" | "jobs") {
 }
 
 // ─── Data loaders ──────────────────────────────────────────────────────────
-const timeUrl = new URL("./time.json", import.meta.url).href;
-
+const timeUrl = fetch("./time.json").then((r) => r.json());
 // ─── App Shell ─────────────────────────────────────────────────────────────
 
 function App() {
@@ -30,7 +29,7 @@ function App() {
   }, [theme]);
 
   useEffect(() => {
-    fetch(timeUrl).then((r) => r.json()).then((d) => setTimeData(d));
+    timeUrl.then((d) =>  setTimeData(d["time"]));
   }, []);
 
   const toggleTheme = () => setTheme((t) => (t === "light" ? "dark" : "light"));
@@ -67,7 +66,7 @@ function App() {
           <>
             <span className="nav-updated">
               <span className="nav-updated-dot" />
-              {timeData?.time?.split("GMT")[0].trim() ?? ''} UTC
+              {timeData?.split("GMT")[0].trim() ?? ''} UTC
             </span>
           </>
         )}
