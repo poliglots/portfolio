@@ -1,16 +1,21 @@
-import { useState } from "react";
-import NewsModal from "./NewsModal";
-import type { NewsLog } from "../../../crawl/src/store";
+import type { NewsCardProps } from "../../types";
+import NewsModal from "../modals/NewsModal";
+import { sourceBadgeClass } from "../../utils/sources";
+import { formatDate } from "../../utils/formatting";
+import { useState, useCallback } from "react";
 
-const KNOWN_SOURCES = ["bbc", "cnn", "euronews", "nytimes", "washingtonpost"];
-
-function sourceBadgeClass(level: string) {
-  return KNOWN_SOURCES.includes(level) ? `source-${level}` : "source-default";
-}
-
-
-function NewsCard({ newsLog, headlineRank = -1 }: { newsLog: NewsLog; headlineRank?: number }) {
+function NewsCard({ newsLog, headlineRank = -1 }: NewsCardProps) {
   const [isModalActive, setIsModalActive] = useState(false);
+
+  const openModal = useCallback(() => setIsModalActive(true), []);
+  const closeModal = useCallback(() => setIsModalActive(false), []);
+
+  const handleReadMore = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+    },
+    []
+  );
 
   let cardClass = "news-card";
   if (newsLog.isHeadline) {
@@ -19,17 +24,20 @@ function NewsCard({ newsLog, headlineRank = -1 }: { newsLog: NewsLog; headlineRa
     else cardClass += " is-headline";
   }
 
+  const dateStr = formatDate(newsLog.updatedAt);
+
   return (
     <>
-      <article className={cardClass} onClick={() => setIsModalActive(true)}>
-
+      <article className={cardClass} onClick={openModal}>
+        {/* Primary headline (rank 0) */}
         {headlineRank === 0 && (
           <>
             <div className="primary-image-wrap">
-              {newsLog.imageUrl
-                ? <img className="primary-image" src={newsLog.imageUrl} alt="" loading="lazy" />
-                : <div className="primary-image-placeholder" />
-              }
+              {newsLog.imageUrl ? (
+                <img className="primary-image" src={newsLog.imageUrl} alt="" loading="lazy" />
+              ) : (
+                <div className="primary-image-placeholder" />
+              )}
             </div>
             <div className="primary-text">
               <div className="primary-meta">
@@ -38,14 +46,15 @@ function NewsCard({ newsLog, headlineRank = -1 }: { newsLog: NewsLog; headlineRa
               </div>
               <p className="primary-headline">{newsLog.headline}</p>
               <p className="primary-message">{newsLog.message}</p>
-              <time className="primary-date">{new Date(newsLog.updatedAt).toDateString()}</time>
-              <a href={newsLog.link} target="_blank" rel="noopener noreferrer" className="card-read-btn" onClick={(e) => e.stopPropagation()}>
+              <time className="primary-date">{dateStr}</time>
+              <a href={newsLog.link} target="_blank" rel="noopener noreferrer" className="card-read-btn" onClick={handleReadMore}>
                 Read full article →
               </a>
             </div>
           </>
         )}
 
+        {/* Secondary headline (rank 1) */}
         {headlineRank === 1 && (
           <>
             {newsLog.imageUrl && (
@@ -58,20 +67,22 @@ function NewsCard({ newsLog, headlineRank = -1 }: { newsLog: NewsLog; headlineRa
               </div>
               <p className="secondary-headline">{newsLog.headline}</p>
               <p className="secondary-message">{newsLog.message}</p>
-              <time className="secondary-date">{new Date(newsLog.updatedAt).toDateString()}</time>
-              <a href={newsLog.link} target="_blank" rel="noopener noreferrer" className="card-read-btn" onClick={(e) => e.stopPropagation()}>
+              <time className="secondary-date">{dateStr}</time>
+              <a href={newsLog.link} target="_blank" rel="noopener noreferrer" className="card-read-btn" onClick={handleReadMore}>
                 Read full article →
               </a>
             </div>
           </>
         )}
 
+        {/* Editorial headline (rank 2+) */}
         {headlineRank >= 2 && (
           <div className="editorial-wrap">
-            {newsLog.imageUrl
-              ? <img className="editorial-image" src={newsLog.imageUrl} alt="" loading="lazy" />
-              : <div className="editorial-placeholder" />
-            }
+            {newsLog.imageUrl ? (
+              <img className="editorial-image" src={newsLog.imageUrl} alt="" loading="lazy" />
+            ) : (
+              <div className="editorial-placeholder" />
+            )}
             <div className="editorial-vignette" />
             <div className="editorial-content">
               <div className="editorial-meta">
@@ -80,14 +91,15 @@ function NewsCard({ newsLog, headlineRank = -1 }: { newsLog: NewsLog; headlineRa
               </div>
               <p className="editorial-headline">{newsLog.headline}</p>
               <p className="editorial-message">{newsLog.message}</p>
-              <time className="editorial-date">{new Date(newsLog.updatedAt).toDateString()}</time>
-              <a href={newsLog.link} target="_blank" rel="noopener noreferrer" className="card-read-btn" onClick={(e) => e.stopPropagation()}>
+              <time className="editorial-date">{dateStr}</time>
+              <a href={newsLog.link} target="_blank" rel="noopener noreferrer" className="card-read-btn" onClick={handleReadMore}>
                 Read full article →
               </a>
             </div>
           </div>
         )}
 
+        {/* Regular story */}
         {!newsLog.isHeadline && (
           <>
             {newsLog.imageUrl && (
@@ -103,18 +115,17 @@ function NewsCard({ newsLog, headlineRank = -1 }: { newsLog: NewsLog; headlineRa
             </div>
             <div className="news-card-body">
               <p className="news-message">{newsLog.message}</p>
-              <time className="news-date">{new Date(newsLog.updatedAt).toDateString()}</time>
-              <a href={newsLog.link} target="_blank" rel="noopener noreferrer" className="card-read-btn" onClick={(e) => e.stopPropagation()}>
+              <time className="news-date">{dateStr}</time>
+              <a href={newsLog.link} target="_blank" rel="noopener noreferrer" className="card-read-btn" onClick={handleReadMore}>
                 Read full article →
               </a>
             </div>
           </>
         )}
-
       </article>
       <NewsModal
         isActive={isModalActive}
-        onClose={() => setIsModalActive(false)}
+        onClose={closeModal}
         source={newsLog.level}
         headline={newsLog.headline}
         link={newsLog.link}

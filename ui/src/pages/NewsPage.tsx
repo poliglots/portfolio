@@ -1,70 +1,45 @@
-import { useState, useEffect } from "react";
-import NewsCard from "../components/NewsCard";
-import type { NewsLog } from "../../../crawl/src/store";
-
-const newsDataPromise = fetch("./news.json").then((r) => r.json());
+import PageHeader from "../components/layout/PageHeader";
+import FilterBar from "../components/layout/FilterBar";
+import NewsCard from "../components/cards/NewsCard";
+import { useNewsData } from "../hooks/useNewsData";
 
 function NewsPage() {
-  const [filterBy, setFilterBy] = useState("");
-  const [newsData, setNewsData] = useState<NewsLog[]>([]);
-  const [sources, setSources] = useState<string[]>([]);
-
-  useEffect(() => {
-    newsDataPromise.then((data: NewsLog[]) => {
-      const seen = new Set<string>();
-      const deduped = data.filter((item) => {
-        if (!item.imageUrl) return true;
-        if (seen.has(item.imageUrl)) return false;
-        seen.add(item.imageUrl);
-        return true;
-      });
-      const srcs = [...new Set(deduped.map((i) => i.level))].sort();
-      setNewsData(deduped);
-      setSources(srcs);
-    });
-  }, []);
-
-  const filtered = newsData
-    .sort((a, b) => {
-      const hDiff = (b.isHeadline ? 1 : 0) - (a.isHeadline ? 1 : 0);
-      return hDiff !== 0 ? hDiff : b.updatedAt.localeCompare(a.updatedAt);
-    })
-    .filter((item) => !filterBy || item.level.toLowerCase() === filterBy.toLowerCase());
-
-  let rank = 0;
+  const {
+    sources,
+    sourceFilter,
+    setSourceFilter,
+    filteredAndRanked,
+  } = useNewsData();
 
   return (
     <>
-      <div id="page-header">
-        <h1 className="page-title">News Intelligence</h1>
-        <p className="page-subtitle">
-          {filtered.length} stories · {sources.length} sources · aggregated in real-time
-        </p>
-      </div>
-      <div id="filter-bar">
+      <PageHeader
+        title="News Intelligence"
+        subtitle={`${filteredAndRanked.length} stories · ${sources.length} sources · aggregated in real-time`}
+      />
+      <FilterBar>
         <div className="filter-sources">
           <button
-            className={`source-all${filterBy === "" ? " is-active" : ""}`}
-            onClick={() => setFilterBy("")}
+            className={`source-all${sourceFilter === "" ? " is-active" : ""}`}
+            onClick={() => setSourceFilter("")}
           >
             All Sources
           </button>
           {sources.map((s) => (
             <button
               key={s}
-              className={`source-btn${filterBy === s ? " is-active" : ""}`}
-              onClick={() => setFilterBy(s)}
+              className={`source-btn${sourceFilter === s ? " is-active" : ""}`}
+              onClick={() => setSourceFilter(s)}
             >
               {s}
             </button>
           ))}
         </div>
-      </div>
+      </FilterBar>
       <div id="news-grid">
-        {filtered.map((newsLog, index) => {
-          const headlineRank = newsLog.isHeadline ? rank++ : -1;
-          return <NewsCard key={index} newsLog={newsLog} headlineRank={headlineRank} />;
-        })}
+        {filteredAndRanked.map(({ item: newsLog, rank }) => (
+          <NewsCard key={`${newsLog.link}-${newsLog.updatedAt}`} newsLog={newsLog} headlineRank={rank} />
+        ))}
       </div>
     </>
   );

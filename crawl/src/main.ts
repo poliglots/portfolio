@@ -1,38 +1,17 @@
-import { readNews } from "./news.ts";
-import { crawlAwsJobs, crawlGoogleJobs, crawlIcimsJobs, crawlMastercardJobs } from "./jobs.ts";
-import siteList, {
-  TIME_JSON_FILE,
-} from "./config.ts";
-import { writeFileSync } from "node:fs";
+import { readNews } from "./crawling/news/index.ts";
+import { crawlAwsJobs } from "./crawling/jobs/aws.ts";
+import { crawlGoogleJobs } from "./crawling/jobs/google.ts";
+import { crawlIcimsJobs } from "./crawling/jobs/icims.ts";
+import { crawlMastercardJobs } from "./crawling/jobs/mastercard.ts";
+import { NEWS_SITES } from "./config/news-sites.ts";
+import { writeTime } from "./storage/json.ts";
 
-const DEBUG_MODE = Boolean(process.env.DEBUG_MODE) || false;
-
-// ── Utility ─────────────────────────────────────────────────────────────────
-
-const clean = (s: unknown) =>
-  String(s ?? "").replace(/[\n\r\t]/g, " ").trim();
-
-const stripHtml = (s: string) =>
-  clean(s.replace(/<[^>]+>/g, " ").replace(/\s{2,}/g, " "));
-
-// ── Timestamp Writer ────────────────────────────────────────────────────────
-
-async function writeTime() {
-  try {
-    writeFileSync(TIME_JSON_FILE, `{"time":"${new Date()}"}`);
-  } catch {
-    console.log("error in writing time");
-  }
-}
-
-// ── Entry ───────────────────────────────────────────────────────────────────
-
+/**
+ * Orchestrator: runs all crawlers in parallel, then writes timestamp.
+ */
 async function main() {
-  // Run news and job crawlers in parallel
-  const [sites] = await Promise.all([siteList()]);
-
   // Run all news crawlers in parallel
-  const newsPromises = sites.map((site) => readNews(site));
+  const newsPromises = NEWS_SITES.map((site) => readNews(site));
 
   // Run all job crawlers in parallel
   const jobPromises = [
@@ -43,7 +22,7 @@ async function main() {
   ];
 
   await Promise.all([...newsPromises, ...jobPromises]);
-  await writeTime();
+  writeTime();
   console.log("All crawlers completed.");
 }
 
